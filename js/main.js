@@ -41,6 +41,10 @@ function navigate(hash) {
 
 function render() {
   applyTheme();
+  if (!isActivated()) {
+    renderActivation();
+    return;
+  }
   if (!hasTeam()) {
     renderSetup();
     return;
@@ -54,6 +58,59 @@ function render() {
 }
 
 window.addEventListener('hashchange', render);
+
+// ---------- Activation view (serial number) ----------
+function renderActivation() {
+  document.body.dataset.theme = THEMES[0].id;
+  app.innerHTML = `
+    <div class="activation-brand">
+      <img src="favicon.svg" alt="Logo Fantasta" class="activation-logo" />
+      <h1 class="activation-title">FantAsta 26/27</h1>
+    </div>
+    <div class="setup-card activation-card">
+      <h2>Attiva l'applicazione</h2>
+      <p class="activation-hint">Inserisci il numero seriale per accedere.</p>
+      <div class="field">
+        <label for="serial-input">Serial number</label>
+        <input type="text" id="serial-input" maxlength="19" placeholder="XXXX-XXXX-XXXX-XXXX"
+          autocomplete="off" autocapitalize="characters" spellcheck="false" />
+      </div>
+      <div id="serial-error" class="error-text hidden"></div>
+      <button class="btn-primary" id="serial-submit">Attiva</button>
+    </div>
+  `;
+
+  const input = document.getElementById('serial-input');
+  const errorBox = document.getElementById('serial-error');
+
+  function trySubmit() {
+    const value = input.value.trim();
+    if (!value) {
+      errorBox.textContent = 'Inserisci il numero seriale.';
+      errorBox.classList.remove('hidden');
+      input.classList.add('input-error');
+      return;
+    }
+    if (!isValidSerial(value)) {
+      errorBox.textContent = 'Serial number non valido. Riprova.';
+      errorBox.classList.remove('hidden');
+      input.classList.add('input-error');
+      return;
+    }
+    activate();
+    render();
+  }
+
+  document.getElementById('serial-submit').addEventListener('click', trySubmit);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') trySubmit();
+  });
+  input.addEventListener('input', () => {
+    errorBox.classList.add('hidden');
+    input.classList.remove('input-error');
+  });
+  input.focus();
+}
 
 // ---------- Setup view ----------
 function renderSetup() {

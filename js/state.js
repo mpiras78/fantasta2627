@@ -6,6 +6,7 @@ const STORAGE_KEY = 'fantasta2627:v1';
 
 const defaultState = () => ({
   version: 1,
+  activated: false, // true dopo aver inserito un serial number valido
   team: null, // { name, theme, logo, creditsTotal }
   creditsRemaining: 0,
   players: {}, // id -> { status: 'bought' | 'lost', credits: number }
@@ -36,6 +37,15 @@ function getState() {
 
 function hasTeam() {
   return !!state.team;
+}
+
+function isActivated() {
+  return !!state.activated;
+}
+
+function activate() {
+  state.activated = true;
+  persist();
 }
 
 function createTeam({ name, theme, logo, creditsTotal }) {

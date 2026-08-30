@@ -213,6 +213,49 @@ button:active {
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
 }
 
+.field input.input-error {
+  border-color: var(--danger);
+}
+
+.activation-card {
+  margin-top: 4vh;
+}
+
+.activation-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10vh;
+}
+
+.activation-logo {
+  width: 96px;
+  height: 96px;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+}
+
+.activation-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.activation-hint {
+  margin: -8px 0 20px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.activation-card #serial-input {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
+
 /* Selector Grids */
 .swatch-grid,
 .picker-grid {

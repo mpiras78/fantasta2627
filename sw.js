@@ -4,7 +4,7 @@
 // IMPORTANTE: quando si modificano i file dell'app (js/css/immagini), aggiornare
 // CACHE_NAME (es. incrementare il numero di versione) così i client scaricano
 // la nuova versione invece di continuare a servire la cache vecchia.
-const CACHE_NAME = 'fantasta2627-v1';
+const CACHE_NAME = 'fantasta2627-v2';
 
 const APP_SHELL = [
   './',
@@ -13,6 +13,7 @@ const APP_SHELL = [
   './favicon.svg',
   './css/style.css',
   './js/data.js',
+  './js/serials.js',
   './js/state.js',
   './js/main.js',
   './img/assist.png',

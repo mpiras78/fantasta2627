@@ -1,9 +1,10 @@
 # Fantasta2627
 
-App web (mobile-friendly) per gestire l'asta del fantacalcio 2026/27: creazione squadra (nome,
-tema colore, logo, crediti), asta per ruolo con elenco giocatori diviso per fascia,
-gestione Buy/Lost con crediti, riepilogo rosa/crediti sempre visibile e celebrazione finale a
-rosa completa (3 portieri, 8 difensori, 8 centrocampisti, 6 attaccanti).
+App web (mobile-friendly) per gestire l'asta del fantacalcio 2026/27: attivazione con serial
+number al primo avvio, creazione squadra (nome, tema colore, logo, crediti), asta per ruolo
+con elenco giocatori diviso per fascia, gestione Buy/Lost con crediti, riepilogo rosa/crediti
+sempre visibile e celebrazione finale a rosa completa (3 portieri, 8 difensori, 8
+centrocampisti, 6 attaccanti).
 
 Nessun framework, nessuna build: solo HTML/CSS/JS con script classici (nessun modulo ES) e
 persistenza in `localStorage` del browser (funziona su un solo dispositivo per volta).
@@ -39,10 +40,25 @@ account sviluppatore. Per una vera presenza sugli store (facoltativo, richiede b
 con strumenti come Capacitor, Android Studio/Xcode e account developer a pagamento) si può
 partire da questo stesso sito come base, ma è un passo ulteriore non incluso qui.
 
+## Attivazione (serial number)
+
+Al primo avvio l'app richiede un **numero seriale** (formato `XXXX-XXXX-XXXX-XXXX`, 16
+caratteri alfanumerici maiuscoli in 4 gruppi) prima di mostrare la creazione squadra. Una
+volta attivata su un dispositivo/browser, non verrà più richiesto (salvo dopo un "Reset"
+dalle opzioni, che cancella tutta la memoria compresa l'attivazione).
+
+- L'elenco dei seriali validi è in `sn/list.txt` (leggibile, di riferimento).
+- La copia effettivamente usata dall'app in fase di verifica è in `js/serials.js`: **va
+  aggiornata a mano** ogni volta che cambia `sn/list.txt`, perché il browser non legge
+  `sn/list.txt` a runtime (stesso principio di `js/data.js`/`giocatori.md`).
+- Il confronto ignora maiuscole/minuscole e trattini, quindi l'utente può digitare il
+  seriale con o senza i separatori.
+
 ## Struttura
 
-- `index.html` — entry point della pagina (carica in ordine `js/data.js`, `js/state.js`,
-  `js/main.js` come script classici; registra anche il service worker per la PWA).
+- `index.html` — entry point della pagina (carica in ordine `js/data.js`, `js/serials.js`,
+  `js/state.js`, `js/main.js` come script classici; registra anche il service worker per la
+  PWA).
 - `manifest.json` — descrittore PWA (nome, icona, colori, modalità standalone) usato dal
   browser per l'installazione su schermata Home.
 - `sw.js` — service worker: mette in cache gli asset dell'app per l'uso offline. Se modifichi
@@ -51,9 +67,13 @@ partire da questo stesso sito come base, ma è un passo ulteriore non incluso qu
 - `css/style.css` — stili e temi colore squadra.
 - `js/data.js` — elenco giocatori (ruolo, fascia, squadra, media voto, bonus, malus,
   rigorista), generato da `scripts/build-players.mjs` a partire da `giocatori.md`.
+- `js/serials.js` — elenco dei seriali validi per l'attivazione (copia di `sn/list.txt` usata
+  a runtime, vedi sezione sopra).
 - `js/state.js` — stato applicazione e persistenza in `localStorage`.
 - `js/main.js` — routing, rendering delle viste e logica dell'asta (Buy/Lost/Close).
 - `giocatori.md` — fonte dati originale dei giocatori (di riferimento, non letta a runtime).
+- `sn/list.txt` — elenco leggibile dei seriali di attivazione (di riferimento, non letto a
+  runtime).
 - `scripts/build-players.mjs` — script Node per rigenerare `js/data.js` a partire da
   `giocatori.md` (vedi sezione sotto).
 
