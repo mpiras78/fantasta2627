@@ -322,6 +322,7 @@ button:active {
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   padding: 0 16px;
+  margin-top: 40px;
 }
 
 @media (max-width: 480px) {
