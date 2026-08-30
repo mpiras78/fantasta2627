@@ -1,0 +1,26 @@
+{
+  "name": "Fantasta 2026/27 - Asta Fantacalcio",
+  "short_name": "Fantasta 26/27",
+  "description": "Gestione asta fantacalcio 2026/27: crea la squadra, tieni traccia dei crediti e degli acquisti per ruolo.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

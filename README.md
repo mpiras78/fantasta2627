@@ -22,10 +22,32 @@ Per pubblicarla e usarla da smartphone/tablet basta **GitHub Pages**:
    `https://<utente>.github.io/<repo>/`, apribile da qualsiasi smartphone/tablet con
    connessione internet.
 
+## Installarla come app (Android/iOS)
+
+Il sito è una **PWA (Progressive Web App)**: una volta pubblicato su GitHub Pages (serve
+http/https, non funziona da `file://`), può essere installato sulla schermata Home come
+un'app vera, con icona propria e senza barra degli indirizzi del browser, e continua a
+funzionare anche offline (grazie a `manifest.json` e al service worker `sw.js`).
+
+- **Android (Chrome)**: apri il sito, menu ⋮ → "Installa app" (o "Aggiungi a schermata
+  Home").
+- **iOS/iPadOS (Safari)**: apri il sito, tocca il pulsante Condividi (icona con freccia) →
+  "Aggiungi alla schermata Home".
+
+Non serve pubblicarla sul Play Store o App Store: questa modalità è gratuita e non richiede
+account sviluppatore. Per una vera presenza sugli store (facoltativo, richiede build native
+con strumenti come Capacitor, Android Studio/Xcode e account developer a pagamento) si può
+partire da questo stesso sito come base, ma è un passo ulteriore non incluso qui.
+
 ## Struttura
 
 - `index.html` — entry point della pagina (carica in ordine `js/data.js`, `js/state.js`,
-  `js/main.js` come script classici).
+  `js/main.js` come script classici; registra anche il service worker per la PWA).
+- `manifest.json` — descrittore PWA (nome, icona, colori, modalità standalone) usato dal
+  browser per l'installazione su schermata Home.
+- `sw.js` — service worker: mette in cache gli asset dell'app per l'uso offline. Se modifichi
+  i file dell'app, ricordati di incrementare `CACHE_NAME` in questo file per invalidare la
+  cache dei client già installati.
 - `css/style.css` — stili e temi colore squadra.
 - `js/data.js` — elenco giocatori (ruolo, fascia, squadra, media voto, bonus, malus,
   rigorista), generato da `scripts/build-players.mjs` a partire da `giocatori.md`.

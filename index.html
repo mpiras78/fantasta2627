@@ -5,15 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
   <title>Fantasta 2026/27 - Asta Fantacalcio</title>
   <link rel="stylesheet" href="css/style.css" />
-  <!-- Favicon SVG per tutti i browser moderni -->
+  <!-- Per i browser moderni che supportano SVG -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <!-- Icona per dispositivi Apple iOS (Aggiungi a Home) -->
-  <link rel="apple-touch-icon" href="favicon.svg" />
+
+  <!-- Fallback PNG per browser datati o icone desktop -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <!-- PWA: manifest + colore tema per la barra di stato -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Fantasta 26/27" />
 </head>
 <body>
   <div class="app" id="app"></div>
   <script src="js/data.js"></script>
   <script src="js/state.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    // Registra il service worker per abilitare l'installazione come PWA
+    // e l'utilizzo offline. Solo su http/https (non su file://).
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch((err) => {
+          console.warn('Registrazione service worker fallita:', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
