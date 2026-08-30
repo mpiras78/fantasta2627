@@ -44,3 +44,4 @@ costante `GROUPS` in `js/data.js` seguendo lo stesso formato
 In alternativa, dall'interfaccia di ogni giocatore è disponibile un'icona ✏️ per correggere a
 mano media voto, bonus, malus e rigorista senza toccare il codice (utile per correzioni
 puntuali durante l'asta).
+
