@@ -13,7 +13,7 @@ const LOGOS = ['🛡️', '🦁', '🐺', '🦅', '⭐', '🔥', '👑', '🐉',
 
 const app = document.getElementById('app');
 
-let setupChoice = { theme: THEMES[0].id, logo: LOGOS[0], name: '', creditsTotal: 500 };
+let setupChoice = { theme: THEMES[0].id, logo: LOGOS[0] };
 
 function applyTheme() {
   const team = getState().team;
@@ -63,7 +63,7 @@ function renderSetup() {
       <h2>Crea la tua squadra</h2>
       <div class="field">
         <label for="team-name">Nome squadra</label>
-        <input type="text" id="team-name" maxlength="30" placeholder="Es. Fanta Leoni FC" value="${esc(setupChoice.name)}" />
+        <input type="text" id="team-name" maxlength="30" placeholder="Es. Fanta Leoni FC" />
       </div>
       <div class="field">
         <label>Colori squadra</label>
@@ -75,21 +75,12 @@ function renderSetup() {
       </div>
       <div class="field">
         <label for="credits-total">Crediti disponibili</label>
-        <input type="number" id="credits-total" min="1" step="1" value="${setupChoice.creditsTotal}" />
+        <input type="number" id="credits-total" min="1" step="1" value="500" />
       </div>
       <div id="setup-error" class="error-text hidden"></div>
       <button class="btn-primary" id="setup-submit">Crea squadra</button>
     </div>
   `;
-
-  const nameInput = document.getElementById('team-name');
-  nameInput.addEventListener('input', () => {
-    setupChoice.name = nameInput.value;
-  });
-  const creditsInput = document.getElementById('credits-total');
-  creditsInput.addEventListener('input', () => {
-    setupChoice.creditsTotal = creditsInput.value;
-  });
 
   const themeGrid = document.getElementById('theme-grid');
   THEMES.forEach((t) => {
@@ -118,8 +109,8 @@ function renderSetup() {
   });
 
   document.getElementById('setup-submit').addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    const creditsTotal = parseInt(creditsInput.value, 10);
+    const name = document.getElementById('team-name').value.trim();
+    const creditsTotal = parseInt(document.getElementById('credits-total').value, 10);
     const errorBox = document.getElementById('setup-error');
     if (!name) {
       errorBox.textContent = 'Inserisci il nome della squadra.';
@@ -373,7 +364,6 @@ function effectiveStats(p) {
   return { ...p, ...(patch || {}) };
 }
 
-// Parsing dettagliato di Bonus (Clean sheet o Gol + Assist)
 function parseBonusDetails(bonusStr) {
   const str = String(bonusStr || '');
   const numbers = str.match(/\d+/g) || [];
@@ -384,7 +374,6 @@ function parseBonusDetails(bonusStr) {
   return { mainStat, assist };
 }
 
-// Parsing dei Malus (Ammonizioni, Espulsioni e Gol Subiti per portieri)
 function parseMalusDetails(malusStr) {
   const str = String(malusStr || '');
   const yellowMatch = str.match(/(\d+)\s*amm/i) || str.match(/(\d+)\s*A/i);
@@ -429,34 +418,33 @@ function playerRowHtml(rawPlayer, roleComplete) {
   let malusHtml = '';
 
   if (isPortiere) {
-    // Portieri: Clean Sheet (cleansheet.png) + Gol Subiti (goal.png)
+    // Portieri: Clean Sheet -> VERDE SCURO | Gol Subiti -> ROSSO SCURO
     bonusHtml = `
       <span class="stat-icon-wrapper" title="Clean Sheet">
-        <img src="img/cleansheet.png" class="stat-icon" alt="Clean Sheet" />
-        <span class="icon-count">${bonus.mainStat}</span>
+        <img src="img/cleansheet.png" class="stat-icon cleansheet-img" alt="Clean Sheet" />
+        <span class="icon-count count-green">${bonus.mainStat}</span>
       </span>
     `;
     malusHtml = `
       <span class="stat-icon-wrapper conceded" title="Gol Subiti">
         <img src="img/goal.png" class="stat-icon" alt="Gol Subiti" />
-        <span class="icon-count">${malus.goalsConceded}</span>
+        <span class="icon-count count-red">${malus.goalsConceded}</span>
       </span>
     `;
   } else {
-    // Difensori, Centrocampisti, Attaccanti: Gol (goal.png) + Assist (assist.png)
+    // Altri ruoli: Gol e Assist entrambi -> VERDE SCURO
     bonusHtml = `
       <span class="stat-icon-wrapper" title="Gol">
         <img src="img/goal.png" class="stat-icon" alt="Gol" />
-        <span class="icon-count">${bonus.mainStat}</span>
+        <span class="icon-count count-green">${bonus.mainStat}</span>
       </span>
       <span class="stat-icon-wrapper" title="Assist">
         <img src="img/assist.png" class="stat-icon" alt="Assist" />
-        <span class="icon-count">${bonus.assist}</span>
+        <span class="icon-count count-green">${bonus.assist}</span>
       </span>
     `;
   }
 
-  // Nome/Cognome del giocatore visibile senza squadra tra parentesi
   const inner = `
     <span class="name">${esc(p.name)}</span>
     <span class="stat" title="Media voto">${p.mediaVoto}</span>

@@ -519,7 +519,7 @@ button:active {
 }
 
 .player-row .stat {
-  font-size: 0.82rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-muted);
   background: var(--bg);
@@ -621,8 +621,34 @@ button:active {
   flex-shrink: 0;
 }
 
+/* Icona Clean Sheet: ritaglio circolare perfetto sull'immagine originale e sfondo campo/cielo */
+.player-row .stat-icon.cleansheet-img {
+  width: 30px;
+  height: 30px;
+  object-fit: stroke;
+  border-radius: 50%;
+  clip-path: circle(50% at 50% 50%);
+  /* Sfondo sfumato: 55% cielo azzurro, 45% campo verde */
+  background: linear-gradient(180deg, #cbeeff 0%, #cbeeff 55%, #a1e075 55%, #a1e075 100%);
+  vertical-align: middle;
+}
+
 .player-row .stat-icon-wrapper.conceded {
   background: var(--danger-bg);
+  /* background-color: #dc2626; */
+}
+
+/* Styling e colori mirati per i numeri */
+.player-row .icon-count.count-green {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #15803d; /* Verde scuro */
+}
+
+.player-row .icon-count.count-red {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #b91c1c; /* Rosso scuro */
 }
 
 .player-row .stat-icon {
