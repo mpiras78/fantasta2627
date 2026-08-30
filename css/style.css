@@ -243,6 +243,23 @@ button:active {
   color: var(--text);
 }
 
+.activation-contact {
+  text-align: center;
+  margin: 28px 16px 24px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.activation-contact a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.activation-contact a:hover {
+  text-decoration: underline;
+}
+
 .activation-hint {
   margin: -8px 0 20px;
   color: var(--text-muted);
@@ -370,6 +387,25 @@ button:active {
 
 @media (max-width: 480px) {
   .role-grid { grid-template-columns: 1fr; }
+}
+
+.app-credits {
+  text-align: center;
+  padding: 28px 16px 24px;
+  margin-top: 24px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.app-credits a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-credits a:hover {
+  text-decoration: underline;
 }
 
 .role-card {

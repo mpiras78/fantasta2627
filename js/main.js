@@ -11,9 +11,11 @@ const THEMES = [
 
 const LOGOS = ['🛡️', '🦁', '🐺', '🦅', '⭐', '🔥', '👑', '🐉', '⚔️', '🐎'];
 
+const APP_VERSION = '1.0.0';
+
 const app = document.getElementById('app');
 
-let setupChoice = { theme: THEMES[0].id, logo: LOGOS[0] };
+let setupChoice = { theme: THEMES[0].id, logo: LOGOS[0], name: '', creditsTotal: 500 };
 
 function applyTheme() {
   const team = getState().team;
@@ -78,6 +80,10 @@ function renderActivation() {
       <div id="serial-error" class="error-text hidden"></div>
       <button class="btn-primary" id="serial-submit">Attiva</button>
     </div>
+    <p class="activation-contact">
+      Per richiedere un seriale invia la tua richiesta a
+      <a href="mailto:goemontero@gmail.com">goemontero@gmail.com</a>
+    </p>
   `;
 
   const input = document.getElementById('serial-input');
@@ -120,7 +126,7 @@ function renderSetup() {
       <h2>Crea la tua squadra</h2>
       <div class="field">
         <label for="team-name">Nome squadra</label>
-        <input type="text" id="team-name" maxlength="30" placeholder="Es. Fanta Leoni FC" />
+        <input type="text" id="team-name" maxlength="30" placeholder="Es. Fanta Leoni FC" value="${esc(setupChoice.name)}" />
       </div>
       <div class="field">
         <label>Colori squadra</label>
@@ -132,12 +138,21 @@ function renderSetup() {
       </div>
       <div class="field">
         <label for="credits-total">Crediti disponibili</label>
-        <input type="number" id="credits-total" min="1" step="1" value="500" />
+        <input type="number" id="credits-total" min="1" step="1" value="${setupChoice.creditsTotal}" />
       </div>
       <div id="setup-error" class="error-text hidden"></div>
       <button class="btn-primary" id="setup-submit">Crea squadra</button>
     </div>
   `;
+
+  const nameInput = document.getElementById('team-name');
+  nameInput.addEventListener('input', () => {
+    setupChoice.name = nameInput.value;
+  });
+  const creditsInput = document.getElementById('credits-total');
+  creditsInput.addEventListener('input', () => {
+    setupChoice.creditsTotal = creditsInput.value;
+  });
 
   const themeGrid = document.getElementById('theme-grid');
   THEMES.forEach((t) => {
@@ -166,8 +181,8 @@ function renderSetup() {
   });
 
   document.getElementById('setup-submit').addEventListener('click', () => {
-    const name = document.getElementById('team-name').value.trim();
-    const creditsTotal = parseInt(document.getElementById('credits-total').value, 10);
+    const name = nameInput.value.trim();
+    const creditsTotal = parseInt(creditsInput.value, 10);
     const errorBox = document.getElementById('setup-error');
     if (!name) {
       errorBox.textContent = 'Inserisci il nome della squadra.';
@@ -232,6 +247,13 @@ function renderHome() {
   app.innerHTML = `
     ${headerHtml(false)}
     <div class="role-grid">${roleCards}</div>
+    <footer class="app-credits">
+      <div>FantAsta 26/27</div>
+      <div>v${APP_VERSION}</div>
+      <div>Author: Marco Piras</div>
+      <div><a href="mailto:goemontero@gmail.com">goemontero@gmail.com</a></div>
+      <div>2026</div>
+    </footer>
   `;
 
   app.querySelectorAll('.btn-start').forEach((btn) => {
