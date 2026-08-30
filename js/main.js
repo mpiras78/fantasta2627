@@ -1,7 +1,4 @@
-// Logica applicazione: routing (hash-based), rendering viste, modal Buy/Lost,
-// celebrazione finale. Nessun framework: DOM diretto.
-// Usa costanti/funzioni di data.js e state.js (caricati prima di questo file
-// tramite <script> classici, senza moduli ES: nessun problema CORS/file://).
+// Logica applicazione: routing (hash-based), rendering viste, modal Buy/Lost, celebrazione finale.
 
 const THEMES = [
   { id: 'nero-blu', label: 'Nero / Blu' },
@@ -111,7 +108,6 @@ function renderSetup() {
     logoGrid.appendChild(el);
   });
 
-  // ripristina eventuali valori gia' inseriti (nome/crediti) dopo un re-render
   document.getElementById('setup-submit').addEventListener('click', () => {
     const name = document.getElementById('team-name').value.trim();
     const creditsTotal = parseInt(document.getElementById('credits-total').value, 10);
@@ -193,11 +189,11 @@ function renderHome() {
   }
 }
 
-// ---------- Modifica dati squadra (nome, colori, icone) ----------
+// ---------- Modifica dati squadra ----------
 function openTeamSettings() {
   const team = getState().team;
   const choice = { name: team.name, theme: team.theme, logo: team.logo };
-  let mode = 'edit'; // 'edit' | 'confirm-reset'
+  let mode = 'edit';
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -303,7 +299,7 @@ function openTeamSettings() {
       render();
     });
     overlay.querySelector('#settings-close').addEventListener('click', () => {
-      applyTheme(); // ripristina il tema salvato, annullando eventuali anteprime
+      applyTheme();
       overlay.remove();
     });
     overlay.querySelector('#settings-reset').addEventListener('click', () => {
@@ -354,6 +350,7 @@ function renderRole(role) {
   app.querySelectorAll('button.select-btn').forEach((btn) => {
     btn.addEventListener('click', () => openModal(btn.dataset.id));
   });
+
   app.querySelectorAll('.edit-stats-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -365,6 +362,31 @@ function renderRole(role) {
 function effectiveStats(p) {
   const patch = getStatsPatch(p.id);
   return { ...p, ...(patch || {}) };
+}
+
+// Parsing dettagliato di Bonus (Clean sheet o Gol + Assist)
+function parseBonusDetails(bonusStr) {
+  const str = String(bonusStr || '');
+  const numbers = str.match(/\d+/g) || [];
+  
+  const mainStat = numbers[0] ? parseInt(numbers[0], 10) : 0;
+  const assist = numbers[1] ? parseInt(numbers[1], 10) : 0;
+
+  return { mainStat, assist };
+}
+
+// Parsing dei Malus (Ammonizioni, Espulsioni e Gol Subiti per portieri)
+function parseMalusDetails(malusStr) {
+  const str = String(malusStr || '');
+  const yellowMatch = str.match(/(\d+)\s*amm/i) || str.match(/(\d+)\s*A/i);
+  const redMatch = str.match(/(\d+)\s*esp/i) || str.match(/(\d+)\s*R/i);
+  const goalsConcededMatch = str.match(/(\d+)\s*gs/i) || str.match(/(\d+)\s*sub/i) || str.match(/-(\d+)/);
+  
+  return {
+    yellow: yellowMatch ? parseInt(yellowMatch[1], 10) : 0,
+    red: redMatch ? parseInt(redMatch[1], 10) : 0,
+    goalsConceded: goalsConcededMatch ? parseInt(goalsConcededMatch[1], 10) : 0
+  };
 }
 
 function playerRowHtml(rawPlayer, roleComplete) {
@@ -386,16 +408,53 @@ function playerRowHtml(rawPlayer, roleComplete) {
     creditTag = `<span class="credit-tag">${status.credits}</span>`;
     clickable = false;
   } else if (roleComplete) {
-    // ruolo gia' completo: i giocatori ancora disponibili non sono piu' acquistabili
     rowClass += ' role-full';
     clickable = false;
   }
 
+  const bonus = parseBonusDetails(p.bonus);
+  const malus = parseMalusDetails(p.malus);
+  const isPortiere = p.role === 'P' || p.role === 'POR';
+
+  let bonusHtml = '';
+  let malusHtml = '';
+
+  if (isPortiere) {
+    // Portieri: Clean Sheet (cleansheet.png) + Gol Subiti (goal.png)
+    bonusHtml = `
+      <span class="stat-icon-wrapper" title="Clean Sheet">
+        <img src="img/cleansheet.png" class="stat-icon" alt="Clean Sheet" />
+        <span class="icon-count">${bonus.mainStat}</span>
+      </span>
+    `;
+    malusHtml = `
+      <span class="stat-icon-wrapper conceded" title="Gol Subiti">
+        <img src="img/goal.png" class="stat-icon" alt="Gol Subiti" />
+        <span class="icon-count">${malus.goalsConceded}</span>
+      </span>
+    `;
+  } else {
+    // Difensori, Centrocampisti, Attaccanti: Gol (goal.png) + Assist (assist.png)
+    bonusHtml = `
+      <span class="stat-icon-wrapper" title="Gol">
+        <img src="img/goal.png" class="stat-icon" alt="Gol" />
+        <span class="icon-count">${bonus.mainStat}</span>
+      </span>
+      <span class="stat-icon-wrapper" title="Assist">
+        <img src="img/assist.png" class="stat-icon" alt="Assist" />
+        <span class="icon-count">${bonus.assist}</span>
+      </span>
+    `;
+  }
+
+  // Nome/Cognome del giocatore visibile senza squadra tra parentesi
   const inner = `
-    <span class="name">${esc(p.name)}${p.team ? ` <small style="opacity:.6">(${esc(p.team)})</small>` : ''}</span>
+    <span class="name">${esc(p.name)}</span>
     <span class="stat" title="Media voto">${p.mediaVoto}</span>
-    <span class="stat" title="Bonus">${esc(p.bonus)}</span>
-    <span class="stat" title="Malus">${esc(p.malus)}</span>
+    ${bonusHtml}
+    ${malusHtml}
+    <span class="card-yellow" title="Ammonizioni">${malus.yellow}</span>
+    <span class="card-red" title="Espulsioni">${malus.red}</span>
     ${rigoristaBadge}
   `;
 
@@ -403,7 +462,7 @@ function playerRowHtml(rawPlayer, roleComplete) {
     <div class="${rowClass}">
       ${clickable
         ? `<button type="button" class="select-btn" data-id="${p.id}">${inner}</button>`
-        : `<div class="select-btn" style="display:flex;align-items:center;gap:8px;flex:1;">${inner}</div>`}
+        : `<div class="select-btn" style="display:flex;align-items:center;gap:6px;flex:1;">${inner}</div>`}
       ${creditTag}
       <button type="button" class="edit-stats-btn" data-id="${p.id}" title="Modifica statistiche">✏️</button>
     </div>
